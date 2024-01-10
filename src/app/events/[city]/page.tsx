@@ -1,7 +1,9 @@
 import EventsList from "@/components/events-list";
 import PrimaryHeading from "@/components/primary-heading";
-import { EventoEvent } from "@/lib/types";
-import { z } from "zod";
+import { Suspense } from "react";
+import Loading from "./loading";
+import { Metadata } from "next";
+import { capitalize } from "@/lib/utils";
 
 type EventsPageProps = {
   params: {
@@ -9,45 +11,26 @@ type EventsPageProps = {
   };
 };
 
+const parseCity = (city: string) => {
+  return city === "all" ? "All Events" : `Events in ${capitalize(city)}`;
+}
+
+export function generateMetadata({ params }: EventsPageProps): Metadata {
+  const title = parseCity(params.city);
+  return {
+    title: `Evento - ${title}`,
+  };
+}
+
 export default async function EventsPage({ params }: EventsPageProps) {
   const { city } = params;
-  let events: EventoEvent[] = [];
-
-  try {
-    const res = await fetch(
-      `https://bytegrad.com/course-assets/projects/evento/api/events?city=${city}`
-    );
-
-    if (!res.ok) throw new Error(`Server response status: ${res.status}`);
-
-    const EventoEventSchema = z.object({
-      id: z.number(),
-      name: z.string(),
-      slug: z.string(),
-      city: z.string(),
-      location: z.string(),
-      date: z.union([z.date(), z.string()]),
-      organizerName: z.string(),
-      imageUrl: z.string(),
-      description: z.string(),
-    });
-    const EventoEventArraySchema = z.array(EventoEventSchema);
-    const rawEvents = await res.json();
-    const parsedEvents = EventoEventArraySchema.safeParse(rawEvents);
-
-    if (!parsedEvents.success) throw new Error(parsedEvents.error.message);
-
-    events = parsedEvents.data;
-  } catch (error) {
-    console.error(error);
-  }
-
-  const capitalizedCity = city[0].toUpperCase() + city.slice(1);
-  const title = city === "all" ? "All Events" : `Events in ${capitalizedCity}`;
+  const title = parseCity(params.city);
   return (
     <main className="flex flex-col items-center py-24 px-[20px]">
-      <PrimaryHeading>{title}</PrimaryHeading>
-      {events.length === 0 ? 'No events found...' : <EventsList events={events} />}
+      <PrimaryHeading className="mb-28">{title}</PrimaryHeading>
+      <Suspense fallback={<Loading />}>
+        <EventsList city={city} />
+      </Suspense>
     </main>
   );
 }

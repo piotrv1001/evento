@@ -1,9 +1,22 @@
-type PrimaryHeadingProps = {
-  children: React.ReactNode;
-}
+import { cn } from "@/lib/utils";
 
-export default function PrimaryHeading({ children }: PrimaryHeadingProps) {
+type PrimaryHeadingProps = {
+  className?: string;
+  children: React.ReactNode;
+};
+
+export default function PrimaryHeading({
+  children,
+  className,
+}: PrimaryHeadingProps) {
   return (
-    <h1 className="text-3xl lg:text-6xl font-bold tracking-tight">{children}</h1>
-  )
+    <h1
+      className={cn(
+        "text-3xl lg:text-6xl font-bold tracking-tight",
+        className
+      )}
+    >
+      {children}
+    </h1>
+  );
 }
