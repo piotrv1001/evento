@@ -32,7 +32,9 @@ export default function EventCard({ event }: EventCardProps) {
       className="h-[380px] max-w-[500px] flex flex-col flex-1 basis-80"
       href={`/event/${event.slug}`}
       style={{
+        // @ts-ignore
         scale: scaleProgress,
+        // @ts-ignore
         opacity: opacityProgress
       }}
       initial={{

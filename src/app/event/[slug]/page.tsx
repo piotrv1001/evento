@@ -1,6 +1,6 @@
 import PrimaryHeading from "@/components/primary-heading";
 import { EventoEvent } from "@prisma/client";
-import { getEvent } from "@/lib/utils";
+import { getEvent } from "@/lib/server-utils";
 import { Metadata } from "next";
 import Image from "next/image";
 
@@ -15,6 +15,13 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
   return {
     title: `Evento - ${event.name}`,
   };
+}
+
+export async function generateStaticParams() {
+  return [
+    { slug: "dj-practice-session" },
+    { slug: "comedy-extravaganza" }
+  ]
 }
 
 export default async function EventPage({ params }: EventPageProps) {
